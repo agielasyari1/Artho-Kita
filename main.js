@@ -37,3 +37,15 @@ function formatCurrency(amount) {
         minimumFractionDigits: 0
     }).format(amount).replace(/[A-Z]{3}|IDR|USD|EUR|GBP/, symbol);
 } 
+(async () => {
+    try {
+        const { data, error } = await supabase.from('categories').select('*').limit(1);
+        if (error) {
+            console.error('❌ Supabase connection FAILED:', error.message);
+        } else {
+            console.log('✅ Supabase connection SUCCESS. Sample data:', data);
+        }
+    } catch (err) {
+        console.error('❌ Unexpected error:', err.message);
+    }
+})();
