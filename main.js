@@ -1,8 +1,11 @@
 // ... seluruh isi <script> dari finance.html dipindahkan ke sini ... 
 // Multi-currency logic
+import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
+
 const supabaseUrl = 'https://vofqjygceblthhqbajqh.supabase.co';
 const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZvZnFqeWdjZWJsdGhocWJhanFoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTMzMzkxODgsImV4cCI6MjA2ODkxNTE4OH0.I9dT9PZPfmX6p7QSuYOIkP1TAvsobsxxlGpyGLxBzZc';
-const supabase = supabase.createClient(supabaseUrl, supabaseKey);
+const supabase = createClient(supabaseUrl, supabaseKey);
+
 const currencySelect = document.getElementById('currencySelect');
 function setCurrency(currency) {
     localStorage.setItem('currency', currency);
