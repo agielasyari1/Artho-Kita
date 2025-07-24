@@ -10,9 +10,9 @@ const currencySelect = document.getElementById('currencySelect');
 function setCurrency(currency) {
     localStorage.setItem('currency', currency);
     currencySelect.value = currency;
-    updateDashboard();
-    updateTransactionsPage();
-    updateReportsPage();
+    //updateDashboard();
+    //updateTransactionsPage();
+    //updateReportsPage();
 }
 currencySelect.addEventListener('change', () => {
     setCurrency(currencySelect.value);
