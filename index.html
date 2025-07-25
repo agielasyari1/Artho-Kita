@@ -643,73 +643,73 @@
     <!-- Hapus <script>...</script> lama, ganti dengan: -->
     <script type="module" src="main.js"></script>
     <script>
-        // Backup Data
-        const backupDataBtn = document.getElementById('backupDataBtn');
-        backupDataBtn.addEventListener('click', async () => {
-            if (!currentUser) return showToast('Anda harus login!', 'error');
-            // Ambil semua kategori dan transaksi user
-            const { data: categories, error: catErr } = await supabase
-                .from('categories')
-                .select('*')
-                .eq('user_id', currentUser.id);
-            const { data: transactions, error: trxErr } = await supabase
-                .from('transactions')
-                .select('*')
-                .eq('user_id', currentUser.id);
-            if (catErr || trxErr) return showToast('Gagal backup data', 'error');
-            const backup = {
-                user: currentUser.email,
-                exportedAt: new Date().toISOString(),
-                categories,
-                transactions
-            };
-            const blob = new Blob([JSON.stringify(backup, null, 2)], { type: 'application/json' });
-            const url = URL.createObjectURL(blob);
-            const link = document.createElement('a');
-            link.href = url;
-            link.download = `rupiahtracker-backup-${new Date().toISOString().slice(0,10)}.json`;
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-            showToast('Backup berhasil diunduh!', 'success');
-        });
-        // Restore Data
-        const restoreDataInput = document.getElementById('restoreDataInput');
-        restoreDataInput.addEventListener('change', async (e) => {
-            if (!currentUser) return showToast('Anda harus login!', 'error');
-            const file = e.target.files[0];
-            if (!file) return;
-            try {
-                const text = await file.text();
-                const json = JSON.parse(text);
-                if (!json.categories || !json.transactions) throw new Error('Format file tidak valid');
-                // Konfirmasi
-                if (!confirm('Restore akan menghapus semua data lama dan menggantinya dengan data dari file. Lanjutkan?')) return;
-                // Hapus data lama
-                await supabase.from('transactions').delete().eq('user_id', currentUser.id);
-                await supabase.from('categories').delete().eq('user_id', currentUser.id);
-                // Insert kategori
-                for (const cat of json.categories) {
-                    const { id, user_id, ...rest } = cat;
-                    await supabase.from('categories').insert([{ ...rest, user_id: currentUser.id }]);
-                }
-                // Insert transaksi
-                for (const trx of json.transactions) {
-                    const { id, user_id, ...rest } = trx;
-                    await supabase.from('transactions').insert([{ ...rest, user_id: currentUser.id }]);
-                }
-                await loadCategories();
-                await loadTransactions();
-                updateDashboard();
-                updateTransactionsPage();
-                updateCategoriesPage();
-                updateReportsPage();
-                showToast('Restore data berhasil!', 'success');
-            } catch (err) {
-                showToast('Restore gagal: ' + err.message, 'error');
-            }
-            restoreDataInput.value = '';
-        });
+        // === Navigasi Sidebar ===
+        const dashboardBtn = document.getElementById('dashboardBtn');
+        const transactionsBtn = document.getElementById('transactionsBtn');
+        const categoriesBtn = document.getElementById('categoriesBtn');
+        const reportsBtn = document.getElementById('reportsBtn');
+        const settingsBtn = document.getElementById('settingsBtn');
+
+        const dashboardPage = document.getElementById('dashboardPage');
+        const transactionsPage = document.getElementById('transactionsPage');
+        const categoriesPage = document.getElementById('categoriesPage');
+        const reportsPage = document.getElementById('reportsPage');
+        const settingsPage = document.getElementById('settingsPage');
+        const pageTitle = document.getElementById('pageTitle');
+
+        function showPage(page) {
+          // Sembunyikan semua page
+          dashboardPage.classList.add('hidden');
+          transactionsPage.classList.add('hidden');
+          categoriesPage.classList.add('hidden');
+          reportsPage.classList.add('hidden');
+          settingsPage.classList.add('hidden');
+          // Reset nav button style (opsional)
+          dashboardBtn.classList.remove('bg-indigo-50', 'text-indigo-700');
+          transactionsBtn.classList.remove('bg-indigo-50', 'text-indigo-700');
+          categoriesBtn.classList.remove('bg-indigo-50', 'text-indigo-700');
+          reportsBtn.classList.remove('bg-indigo-50', 'text-indigo-700');
+          settingsBtn.classList.remove('bg-indigo-50', 'text-indigo-700');
+
+          // Tampilkan page yang dipilih
+          switch (page) {
+            case 'dashboard':
+              dashboardPage.classList.remove('hidden');
+              pageTitle.textContent = 'Dashboard';
+              dashboardBtn.classList.add('bg-indigo-50', 'text-indigo-700');
+              break;
+            case 'transactions':
+              transactionsPage.classList.remove('hidden');
+              pageTitle.textContent = 'Transactions';
+              transactionsBtn.classList.add('bg-indigo-50', 'text-indigo-700');
+              break;
+            case 'categories':
+              categoriesPage.classList.remove('hidden');
+              pageTitle.textContent = 'Categories';
+              categoriesBtn.classList.add('bg-indigo-50', 'text-indigo-700');
+              break;
+            case 'reports':
+              reportsPage.classList.remove('hidden');
+              pageTitle.textContent = 'Reports';
+              reportsBtn.classList.add('bg-indigo-50', 'text-indigo-700');
+              break;
+            case 'settings':
+              settingsPage.classList.remove('hidden');
+              pageTitle.textContent = 'Settings';
+              settingsBtn.classList.add('bg-indigo-50', 'text-indigo-700');
+              break;
+          }
+        }
+
+        // Event listener tombol sidebar
+        if (dashboardBtn) dashboardBtn.addEventListener('click', () => showPage('dashboard'));
+        if (transactionsBtn) transactionsBtn.addEventListener('click', () => showPage('transactions'));
+        if (categoriesBtn) categoriesBtn.addEventListener('click', () => showPage('categories'));
+        if (reportsBtn) reportsBtn.addEventListener('click', () => showPage('reports'));
+        if (settingsBtn) settingsBtn.addEventListener('click', () => showPage('settings'));
+
+        // Tampilkan dashboard saat pertama kali login
+        if (dashboardPage) showPage('dashboard');
     </script>
 </body>
 </html>
