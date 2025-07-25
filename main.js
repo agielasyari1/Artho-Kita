@@ -1,4 +1,4 @@
-// main.js (v2 - Robust Event Handling)
+// main.js (v3 - Final Fix)
 import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
 
 // === Konfigurasi Supabase ===
@@ -45,7 +45,6 @@ const getDashboardHTML = () => `
     <div class="mt-6 bg-white dark:bg-gray-800 rounded-xl shadow p-6"><h3 class="font-bold text-lg mb-4">Recent Transactions</h3><div id="recentTransactions" class="space-y-3"></div></div>`;
 
 const getTransactionsPageHTML = () => `<div id="all-transactions-list" class="space-y-3"></div>`;
-// Tambahkan template HTML untuk halaman lain di sini (Categories, Reports, Settings)
 
 const renderPageContent = () => {
     DOMElements.pageContent.innerHTML = ''; // Clear previous content
@@ -58,20 +57,17 @@ const renderPageContent = () => {
         DOMElements.pageContent.innerHTML = getTransactionsPageHTML();
         renderTransactionsList();
     }
-    // Tambahkan kondisi render untuk halaman lain
 };
 
 const renderDashboardData = () => {
-    // Fungsi ini sekarang hanya mengisi data, bukan membuat ulang HTML
     const income = state.transactions.filter(t => t.categories.type === 'income').reduce((sum, t) => sum + t.amount, 0);
     const expense = state.transactions.filter(t => t.categories.type === 'expense').reduce((sum, t) => sum + t.amount, 0);
-
     $('#totalIncome').textContent = formatCurrency(income);
     $('#totalExpense').textContent = formatCurrency(expense);
     $('#totalBalance').textContent = formatCurrency(income - expense);
     
     const recentContainer = $('#recentTransactions');
-    recentContainer.innerHTML = ''; // Clear only the list
+    recentContainer.innerHTML = '';
     state.transactions.slice(0, 5).forEach(trx => {
         const el = document.createElement('div');
         el.className = 'transaction-card bg-gray-50 dark:bg-gray-700 p-3 rounded-lg flex justify-between items-center';
@@ -86,12 +82,10 @@ const renderDashboardData = () => {
 const renderTransactionsList = () => {
     const container = $('#all-transactions-list');
     container.innerHTML = '';
-
     if (state.transactions.length === 0) {
         container.innerHTML = `<p class="text-center text-gray-500 py-8">No transactions found.</p>`;
         return;
     }
-    
     state.transactions.forEach(trx => {
         const el = document.createElement('div');
         el.className = 'transaction-card bg-white dark:bg-gray-800 p-4 rounded-lg shadow flex justify-between items-center';
@@ -100,7 +94,6 @@ const renderTransactionsList = () => {
     });
 };
 
-// === Fungsi Utility ===
 const formatCurrency = (amount) => new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(amount);
 const showToast = (msg, type = 'success') => {
     const toast = document.createElement('div');
@@ -110,7 +103,6 @@ const showToast = (msg, type = 'success') => {
     setTimeout(() => toast.remove(), 3000);
 };
 
-// === Navigasi ===
 const navigateTo = (page) => {
     state.activePage = page;
     document.querySelectorAll('.nav-btn').forEach(btn => {
@@ -122,11 +114,9 @@ const navigateTo = (page) => {
     DOMElements.sidebarOverlay.classList.add('hidden');
 };
 
-// === Otentikasi & Data ===
 const handleAuth = async () => {
     const { data: { session } } = await supabase.auth.getSession();
     state.currentUser = session?.user;
-
     if (state.currentUser) {
         DOMElements.authSection.classList.add('hidden');
         DOMElements.appSection.classList.remove('hidden');
@@ -149,7 +139,6 @@ const loadInitialData = async () => {
     state.transactions = trxRes.data;
 };
 
-// === CRUD & Modal ===
 const openTransactionModal = (trx = null) => {
     state.editingId = trx ? trx.id : null;
     $('#transactionModalTitle').textContent = trx ? 'Edit Transaction' : 'Add Transaction';
@@ -164,7 +153,6 @@ const openTransactionModal = (trx = null) => {
         const filteredCategories = state.categories.filter(c => c.type === type);
         categorySelect.innerHTML = filteredCategories.map(c => `<option value="${c.id}">${c.name}</option>`).join('');
     };
-
     typeRadios.forEach(radio => radio.onchange = () => updateCategoryOptions(radio.value));
 
     if (trx) {
@@ -180,7 +168,6 @@ const openTransactionModal = (trx = null) => {
         updateCategoryOptions('expense');
         form.querySelector('[name="date"]').value = new Date().toISOString().slice(0, 10);
     }
-    
     DOMElements.transactionModal.classList.remove('hidden');
 };
 
@@ -193,16 +180,23 @@ const handleTransactionSubmit = async (e) => {
     trxData.amount = parseFloat(trxData.amount);
     trxData.user_id = state.currentUser.id;
 
+    // === INILAH PERBAIKANNYA ===
+    // Hapus properti 'type' karena tidak ada di tabel 'transactions'
+    delete trxData.type;
+
     const { error } = state.editingId 
         ? await supabase.from('transactions').update(trxData).eq('id', state.editingId)
         : await supabase.from('transactions').insert([trxData]);
 
-    if (error) return showToast(error.message, 'error');
+    if (error) {
+        showToast(error.message, 'error');
+        return;
+    }
     
     showToast(`Transaction ${state.editingId ? 'updated' : 'added'}!`);
     closeTransactionModal();
     await loadInitialData();
-    renderPageContent(); // Re-render the current page
+    renderPageContent();
 };
 
 const deleteTransaction = async (id) => {
@@ -211,17 +205,13 @@ const deleteTransaction = async (id) => {
     if (error) return showToast(error.message, 'error');
     showToast('Transaction deleted.');
     await loadInitialData();
-    renderPageContent(); // Re-render
+    renderPageContent();
 };
 
-// === Event Listeners ===
 const setupEventListeners = () => {
-    // Gunakan satu event listener di level dokumen
     document.addEventListener('click', async (e) => {
         const target = e.target.closest('button');
         if (!target) return;
-
-        // Auth Buttons
         if (target.id === 'loginBtn') {
             const email = $('#loginEmail').value;
             const password = $('#loginPassword').value;
@@ -244,8 +234,6 @@ const setupEventListeners = () => {
             $('#registerForm').classList.add('hidden');
             $('#loginForm').classList.remove('hidden');
         }
-
-        // App Buttons
         if (target.closest('.nav-btn')) navigateTo(target.closest('.nav-btn').dataset.page);
         if (target.id === 'mobileMenuButton' || target.closest('#mobileMenuButton')) {
             DOMElements.sidebar.classList.add('active');
@@ -261,26 +249,19 @@ const setupEventListeners = () => {
             const id = target.closest('.delete-btn').dataset.id;
             deleteTransaction(id);
         }
-
-        // Modal Buttons
         if (target.closest('.close-modal-btn')) closeTransactionModal();
     });
 
-    // Listener untuk overlay mobile
     DOMElements.sidebarOverlay.onclick = () => {
         DOMElements.sidebar.classList.remove('active');
         DOMElements.sidebarOverlay.classList.add('hidden');
     };
 
-    // Listener untuk form submit
     DOMElements.transactionForm.addEventListener('submit', handleTransactionSubmit);
-
-    // Listener untuk perubahan status otentikasi
     supabase.auth.onAuthStateChange((_event, session) => {
         state.currentUser = session?.user;
         handleAuth();
     });
 };
 
-// === Inisialisasi Aplikasi ===
 document.addEventListener('DOMContentLoaded', setupEventListeners);
