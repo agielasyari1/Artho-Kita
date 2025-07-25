@@ -35,13 +35,13 @@ async function checkAuthStatus() {
   const { data: { session } } = await supabase.auth.getSession();
   if (session) {
     currentUser = session.user;
-    document.getElementById('authScreen').classList.add('hidden');
-    document.getElementById('appContent').classList.remove('hidden');
+    document.getElementById('authSection').classList.add('hidden');
+    document.getElementById('appSection').classList.remove('hidden');
     document.getElementById('userEmail').textContent = currentUser.email;
     loadInitialData();
   } else {
-    document.getElementById('authScreen').classList.remove('hidden');
-    document.getElementById('appContent').classList.add('hidden');
+    document.getElementById('authSection').classList.remove('hidden');
+    document.getElementById('appSection').classList.add('hidden');
   }
 }
 
@@ -56,8 +56,8 @@ async function handleLogin() {
   }
   currentUser = data.user;
   showToast('Login berhasil!', 'success');
-  document.getElementById('authScreen').classList.add('hidden');
-  document.getElementById('appContent').classList.remove('hidden');
+  document.getElementById('authSection').classList.add('hidden');
+  document.getElementById('appSection').classList.remove('hidden');
   document.getElementById('userEmail').textContent = currentUser.email;
   loadInitialData();
 }
@@ -78,8 +78,8 @@ async function handleRegister() {
 async function handleLogout() {
   await supabase.auth.signOut();
   currentUser = null;
-  document.getElementById('authScreen').classList.remove('hidden');
-  document.getElementById('appContent').classList.add('hidden');
+  document.getElementById('authSection').classList.remove('hidden');
+  document.getElementById('appSection').classList.add('hidden');
   showToast('Anda telah logout.', 'success');
 }
 
