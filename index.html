@@ -37,97 +37,47 @@
         .toast-error { background-color: #EF4444; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(-20px); } to { opacity: 1; transform: translateY(0); } }
         @keyframes fadeOut { from { opacity: 1; transform: translateY(0); } to { opacity: 0; transform: translateY(-20px); } }
+        .color-option.selected { border-color: #4f46e5; transform: scale(1.1); }
     </style>
 </head>
 <body class="bg-gray-50 dark:bg-gray-900 text-gray-800 dark:text-gray-200">
 
     <div id="authSection" class="flex items-center justify-center min-h-screen p-4">
-        <div class="bg-white dark:bg-gray-800 rounded-xl shadow-xl overflow-hidden w-full max-w-md">
-            <div class="gradient-bg p-6 text-white text-center">
-                <i class="fas fa-wallet text-4xl mb-2"></i>
-                <h2 class="text-2xl font-bold">Rupiah Tracker</h2>
-                <p class="opacity-90">Your Personal Finance Companion</p>
-            </div>
-            <div class="p-6">
-                <div id="loginForm">
-                    <div class="bg-yellow-100 border-l-4 border-yellow-500 text-yellow-800 p-3 mb-4 rounded">
-                        <strong>Demo Only:</strong> Do not use real credentials.
-                    </div>
-                    <div class="mb-4">
-                        <label for="loginEmail" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Email</label>
-                        <input type="email" id="loginEmail" class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-indigo-500" value="test@example.com">
-                    </div>
-                    <div class="mb-6">
-                        <label for="loginPassword" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Password</label>
-                        <input type="password" id="loginPassword" class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-indigo-500" value="password123">
-                    </div>
-                    <button id="loginBtn" class="w-full gradient-bg text-white py-2 rounded-lg hover:opacity-90 transition">Login</button>
-                    <p class="text-center text-sm mt-4">Don't have an account? <button id="showRegisterBtn" class="text-indigo-600 dark:text-indigo-400 font-medium">Register</button></p>
-                </div>
-                <div id="registerForm" class="hidden">
-                    <div class="mb-4">
-                        <label for="registerEmail" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Email</label>
-                        <input type="email" id="registerEmail" class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-indigo-500">
-                    </div>
-                    <div class="mb-6">
-                        <label for="registerPassword" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Password (min. 6 characters)</label>
-                        <input type="password" id="registerPassword" class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-indigo-500">
-                    </div>
-                    <button id="registerBtn" class="w-full gradient-bg text-white py-2 rounded-lg hover:opacity-90 transition">Register</button>
-                    <p class="text-center text-sm mt-4">Already have an account? <button id="showLoginBtn" class="text-indigo-600 dark:text-indigo-400 font-medium">Login</button></p>
-                </div>
-            </div>
         </div>
-    </div>
 
     <div id="appSection" class="hidden">
         <div id="sidebarOverlay" class="fixed inset-0 bg-black bg-opacity-50 z-40 hidden md:hidden"></div>
         <aside id="sidebar" class="sidebar bg-white dark:bg-gray-800 w-64 h-screen fixed shadow-lg p-4 flex flex-col">
-             <div class="flex items-center justify-between mb-8">
-                <div class="flex items-center space-x-2">
-                    <i class="fas fa-wallet text-indigo-600 text-2xl"></i>
-                    <h1 class="text-xl font-bold">Rupiah Tracker</h1>
-                </div>
-            </div>
-            <nav class="flex-grow">
-                <ul class="space-y-2" id="nav-buttons">
-                    <li><button data-page="dashboard" class="nav-btn w-full flex items-center space-x-3 p-3 rounded-lg"><i class="fas fa-chart-pie w-6"></i><span>Dashboard</span></button></li>
-                    <li><button data-page="transactions" class="nav-btn w-full flex items-center space-x-3 p-3 rounded-lg"><i class="fas fa-exchange-alt w-6"></i><span>Transactions</span></button></li>
-                    <li><button data-page="categories" class="nav-btn w-full flex items-center space-x-3 p-3 rounded-lg"><i class="fas fa-tags w-6"></i><span>Categories</span></button></li>
-                    <li><button data-page="reports" class="nav-btn w-full flex items-center space-x-3 p-3 rounded-lg"><i class="fas fa-file-alt w-6"></i><span>Reports</span></button></li>
-                    <li><button data-page="settings" class="nav-btn w-full flex items-center space-x-3 p-3 rounded-lg"><i class="fas fa-cog w-6"></i><span>Settings</span></button></li>
-                </ul>
-            </nav>
-            <div class="p-3 bg-gray-100 dark:bg-gray-700 rounded-lg flex items-center justify-between">
-                <div class="flex items-center space-x-2 overflow-hidden">
-                    <i class="fas fa-user-circle text-xl"></i>
-                    <span id="userEmail" class="text-sm font-medium truncate"></span>
-                </div>
-                <button id="logoutBtn" class="text-gray-500 hover:text-red-500 dark:text-gray-400 dark:hover:text-red-400" aria-label="Logout"><i class="fas fa-sign-out-alt"></i></button>
-            </div>
-        </aside>
+            </aside>
 
         <main class="md:ml-64 min-h-screen">
             <header class="bg-white dark:bg-gray-800 shadow-sm p-4 flex justify-between items-center">
                  <button id="mobileMenuButton" class="md:hidden text-2xl"><i class="fas fa-bars"></i></button>
                  <h1 id="pageTitle" class="text-xl font-bold">Dashboard</h1>
-                 <button id="addTransactionBtn" class="bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700 flex items-center space-x-2"><i class="fas fa-plus"></i><span class="hidden sm:inline">Add Transaction</span></button>
+                 <button id="add-main-btn" class="bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700 flex items-center space-x-2">
+                    <i class="fas fa-plus"></i><span class="hidden sm:inline">Add New</span>
+                 </button>
             </header>
-
-            <div id="page-content" class="p-4">
-                </div>
+            <div id="page-content" class="p-4"></div>
         </main>
     </div>
 
-    <div id="transactionModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden" role="dialog" aria-modal="true">
+    <div id="transactionModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden" role="dialog">
+        </div>
+    
+    <div id="categoryModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden" role="dialog">
         <div class="bg-white dark:bg-gray-800 rounded-xl shadow-xl w-full max-w-md m-4">
-            <form id="transactionForm" class="p-6">
+            <form id="categoryForm" class="p-6">
                 <div class="flex justify-between items-center mb-4">
-                    <h3 id="transactionModalTitle" class="text-lg font-bold">Add Transaction</h3>
+                    <h3 id="categoryModalTitle" class="text-lg font-bold">Add Category</h3>
                     <button type="button" class="close-modal-btn text-gray-500 hover:text-gray-700" aria-label="Close modal"><i class="fas fa-times"></i></button>
                 </div>
                 <div class="space-y-4">
                     <div>
+                        <label for="categoryName" class="block text-sm font-medium mb-1">Category Name</label>
+                        <input type="text" name="name" id="categoryName" class="w-full px-4 py-2 border rounded-lg" required>
+                    </div>
+                     <div>
                         <label class="block text-sm font-medium mb-1">Type</label>
                         <div class="flex space-x-4">
                             <label><input type="radio" name="type" value="expense" class="form-radio" checked> Expense</label>
@@ -135,29 +85,18 @@
                         </div>
                     </div>
                     <div>
-                        <label for="amount" class="block text-sm font-medium mb-1">Amount</label>
-                        <input type="number" name="amount" class="w-full px-4 py-2 border rounded-lg" required>
+                        <label class="block text-sm font-medium mb-1">Color</label>
+                        <div id="color-options" class="flex flex-wrap gap-3">
+                            </div>
+                        <input type="hidden" name="color" id="categoryColor">
                     </div>
-                    <div>
-                        <label for="category_id" class="block text-sm font-medium mb-1">Category</label>
-                        <select name="category_id" class="w-full px-4 py-2 border rounded-lg" required></select>
-                    </div>
-                    <div>
-                        <label for="date" class="block text-sm font-medium mb-1">Date</label>
-                        <input type="date" name="date" class="w-full px-4 py-2 border rounded-lg" required>
-                    </div>
-                    <div>
-                        <label for="description" class="block text-sm font-medium mb-1">Description (Optional)</label>
-                        <textarea name="description" class="w-full px-4 py-2 border rounded-lg" rows="2"></textarea>
-                    </div>
-                    <div class="pt-2"><button type="submit" class="w-full gradient-bg text-white py-2 rounded-lg hover:opacity-90">Save Transaction</button></div>
+                    <div class="pt-2"><button type="submit" class="w-full gradient-bg text-white py-2 rounded-lg hover:opacity-90">Save Category</button></div>
                 </div>
             </form>
         </div>
     </div>
     
     <div id="toastContainer" class="fixed top-6 right-6 z-[9999] space-y-2"></div>
-
     <script type="module" src="main.js"></script>
 </body>
 </html>
